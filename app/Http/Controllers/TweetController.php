@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Tweet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TweetController extends Controller
 {
@@ -12,7 +13,7 @@ class TweetController extends Controller
      */
     public function index()
     {
-        $tweets = Tweet::with(['user', 'liked'])->latest()->get();
+        $tweets = Tweet::with(['user', 'liked'])->orderBy('pinned_at', 'desc')->latest()->get();
         return view('tweets.index', compact('tweets'));
     }
 
@@ -43,7 +44,8 @@ class TweetController extends Controller
      */
     public function show(Tweet $tweet)
     {
-       return view('tweets.show', compact('tweet'));
+        $tweet->load('comments');
+        return view('tweets.show', compact('tweet'));
     }
 
     /**
@@ -93,5 +95,25 @@ class TweetController extends Controller
         ->paginate(10);
 
     return view('tweets.search', compact('tweets'));
+    }
+
+    public function pin(Tweet $tweet)
+    {
+        Gate::authorize('pin', $tweet);
+
+        $tweet->pinned_at = now();
+        $tweet->save();
+
+        return back()->with('status', '投稿をピン留めしました。');
+    }
+
+    public function unpin(Tweet $tweet)
+    {
+        Gate::authorize('unpin', $tweet);
+
+        $tweet->pinned_at = null;
+        $tweet->save();
+
+        return back()->with('status', '投稿のピン留めを解除しました。');
     }
 }

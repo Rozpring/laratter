@@ -46,7 +46,9 @@
           </div>
           <div class="mt-4">
             @foreach ($tweet->comments as $comment)
-            <p>{{ $comment->comment }} <span class="text-gray-600 dark:text-gray-400 text-sm">{{ $comment->user->name }} {{ $comment->created_at->format('Y-m-d H:i') }}</span></p>
+           <a href="{{ route('tweets.comments.show', [$tweet, $comment]) }}">
+              <p>{{ $comment->comment }} <span class="text-gray-600 dark:text-gray-400 text-sm">{{ $comment->user->name }} {{ $comment->created_at->format('Y-m-d H:i') }}</span></p>
+            </a>
             @endforeach
         </div>
       </div>
