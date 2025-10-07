@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Tweet;
 
 class User extends Authenticatable
 {
@@ -72,5 +73,10 @@ class User extends Authenticatable
     public function followers()
     {
         return $this->belongsToMany(User::class, 'follows', 'follower_id', 'follow_id');
+    }
+
+    public function bookmark_tweets()
+    {
+        return $this->belongsToMany(Tweet::class, 'bookmarks', 'user_id', 'tweet_id')->withTimestamps();
     }
 }
