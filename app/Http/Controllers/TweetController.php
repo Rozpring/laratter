@@ -30,11 +30,19 @@ class TweetController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-        'tweet' => 'required|max:255',
+        $validated = $request->validate([
+        'tweet' => 'required|string|max:280',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $request->user()->tweets()->create($request->only('tweet'));
+        $dataToStore = ['tweet' => $validated['tweet']];
+
+        if ($request->hasFile('image')) {
+        $path = $request->file('image')->store('public/tweets');
+        $dataToStore['image_path'] = basename($path);
+        }
+
+        $request->user()->tweets()->create($dataToStore);
 
         return redirect()->route('tweets.index');
     }

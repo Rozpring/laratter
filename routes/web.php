@@ -7,6 +7,8 @@ use App\Http\Controllers\TweetLikeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BookmarkController;
+use App\Http\Controllers\ChatController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,6 +27,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::post('/tweets/{tweet}/pin', [TweetController::class, 'pin'])->name('tweets.pin');
     Route::delete('/tweets/{tweet}/unpin', [TweetController::class, 'unpin'])->name('tweets.unpin');
+    Route::post('tweets/{tweet}/bookmark', [BookmarkController::class, 'store'])->name('tweets.bookmark');
+    Route::delete('tweets/{tweet}/unbookmark', [BookmarkController::class, 'destroy'])->name('tweets.unbookmark');
+    Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index')->middleware('auth');
+    Route::get('/tweets', [TweetController::class, 'index'])->name('tweets.index');
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
 
     Route::get('/tweets/search', [TweetController::class, 'search'])->name('tweets.search');
     Route::resource('tweets', TweetController::class);
